@@ -1,0 +1,35 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+  - name: install updates on all ubuntu servers
+    tags: always
+    apt: 
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: create devopse user
+    tags: always
+    user:
+      name: devops
+      groups: root
+  - name: add ssh key for devops
+    tags: always
+    authorized_key:
+      user: devops
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAmd4FTUm0lYz3tplueSdrcDdeGRgwz94YrTaL3HI+7S ansible"
+  - name: add sudoer file to devops
+    tags: always
+    copy:
+      src: sudoer_devops
+      dest: /etc/sudoers.d/devops
+      owner: root
+      group: root
+      mode: 0440
+
